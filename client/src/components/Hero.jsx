@@ -9,7 +9,7 @@ const Hero = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center flex-col">
-      <span className="mb-10">
+      <span className="mb-10 flex gap-5">
         <button
           className={compressBtnClass}
           onClick={() => setIsCompress(true)}
