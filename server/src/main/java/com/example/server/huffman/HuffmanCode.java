@@ -78,7 +78,7 @@ public class HuffmanCode implements Comparable<HuffmanCode> {
             codes[i/2] = code;
         }
 
-        return codes;
+        return toCanonicalCode(codes);
     }
 
     // Converts an array of huffmanCodes into a hashmap, where characters map to respective code

@@ -1,9 +1,5 @@
 package com.example.server.huffman;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 
@@ -116,13 +112,6 @@ public class Huffman {
         generateHuffmanCodes(root.rightNode, code + "1");
     }
 
-    // Seralizes Huffman code map into a byte array
-    // Array will be of length 2n, where n is the number of unique chars
-    public byte[] serializeHuffmanCodes() {
-        HuffmanCode[] codes = HuffmanCode.codeMap2CodeArr(this.huffmanCodes);
-        return HuffmanCode.SeralizeCodebook(codes);
-    }
-
     // Returns encoded text based on Huffman code map
     private String getEncodedText() {
         StringBuilder encodedText = new StringBuilder();
@@ -131,6 +120,48 @@ public class Huffman {
             encodedText.append(this.huffmanCodes.get(currChar));
         }
         return encodedText.toString();
+    }
+
+    // Serializes Huffman code map into a byte array
+    // Array will be of length 2n, where n is the number of unique chars
+    public byte[] serializeHuffmanTable() {
+        HuffmanCode[] codes = HuffmanCode.codeMap2CodeArr(this.huffmanCodes);
+        return HuffmanCode.SeralizeCodebook(codes);
+    }
+
+    public static HashMap<Character, String> deserializeHuffmanTable(byte[] tableBytes) {
+        HuffmanCode[] codesArr = HuffmanCode.DeserializeCodebook(tableBytes);
+        return HuffmanCode.createCodeMap(codesArr);
+    }
+
+    // Serializes a string of 1s and 0s into a byte array, adding padding if necessary
+    public static byte[] serializeBitString(String bitString) {
+        int padding = bitString.length() % 8 == 0 ? 0 : 8 - (bitString.length() % 8);
+        String paddingZeros = new String(new char[padding]).replace('\0', '0');
+        String paddedBitString = bitString + paddingZeros;
+
+        byte[] byteArray = new byte[paddedBitString.length() / 8];
+
+        int byteCount = paddedBitString.length() / 8;
+        for (int i = 0; i < byteCount; i++) {
+            String byteSegment = paddedBitString.substring(i * 8, (i + 1) * 8);
+            byteArray[i] = (byte) Integer.parseInt(byteSegment, 2);
+        }
+
+        return byteArray;
+    }
+
+    // Deserializes a byte array into 1s and 0s, removing any extra padding if necessary
+    public static String deserializeBytes(byte[] stringBytes, int padding) {
+        StringBuilder bitString = new StringBuilder();
+
+        for (byte b : stringBytes) {
+            // Convert byte to an 8-bit binary string, ensuring leading zeros
+            String bits = String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0');
+            bitString.append(bits);
+        }
+
+        return bitString.toString().substring(0, bitString.length() - padding);
     }
 
     public String decode(String encodedText) {

@@ -5,12 +5,13 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashMap;
 
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,45 +24,6 @@ import com.example.server.huffman.Huffman;
 @RestController
 @RequestMapping("/compression")
 public class CompressionController {
-
-    public static String convertToBitString(byte[] byteArray, int bitLength) {
-        StringBuilder bitString = new StringBuilder();
-
-        for (int i = 0; i < byteArray.length; i++) {
-            for (int j = 7; j >= 0; j--) {
-                bitString.append(((byteArray[i] >> j) & 1) == 1 ? '1' : '0');
-                if (bitString.length() == bitLength)
-                    return bitString.toString(); // Stop at correct length
-            }
-        }
-        return bitString.toString();
-    }
-
-    public static byte[] convertToByteArray(String bitString) {
-        int byteLength = (bitString.length() + 7) / 8; // Round up to full bytes
-        byte[] byteArray = new byte[byteLength];
-
-        for (int i = 0; i < bitString.length(); i++) {
-            int byteIndex = i / 8;
-            int bitIndex = 7 - (i % 8); // Store bits from left to right
-            if (bitString.charAt(i) == '1') {
-                byteArray[byteIndex] |= (1 << bitIndex);
-            }
-        }
-        return byteArray;
-    }
-
-    /*public static byte[] convertToByteArray(String bitString) {
-        StringBuilder sb = new StringBuilder(bitString);
-        if (bitString.length() % 8 != 0) {
-            int padding = 8 - (bitString.length() % 8);
-            for (int i = 0; i < padding; i++) {
-                sb.append("0");
-            }
-        }
-        byte[] bval = new BigInteger(sb.toString(), 2).toByteArray();
-        return bval;
-    }*/
 
     @PostMapping("/encode")
     public ResponseEntity<?> encodeFile(@RequestParam("file") MultipartFile file) {
@@ -76,20 +38,21 @@ public class CompressionController {
             // Compress using Huffman
             Huffman huff = new Huffman(text);
             String encodedText = huff.encode();
-            //String huffmanTable = huff.serializeHuffmanCodes(); // Store the Huffman table
+
+            // Serializing data
+            byte[] serializedHuffmanTable = huff.serializeHuffmanTable();
+            int padding = encodedText.length() % 8 == 0 ? 0 : 8 - (encodedText.length() & 8); // padding for encoded bit string
+            byte[] serializedBitString = Huffman.serializeBitString(encodedText);
 
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
             try (DataOutputStream dos = new DataOutputStream(byteStream)) {
-                //byte[] huffmanTableBytes = huffmanTable.getBytes(StandardCharsets.UTF_8);
-                byte[] encodedBits = convertToByteArray(encodedText);
-
                 // Write Huffman table length and data
-                //dos.writeInt(huffmanTableBytes.length);
-                //dos.write(huffmanTableBytes);
+                dos.writeInt(serializedHuffmanTable.length);
+                dos.write(serializedHuffmanTable);
 
-                // Write encoded text length and data
-                dos.writeInt(encodedBits.length);
-                dos.write(encodedBits);
+                // Write encoded text padding and data
+                dos.writeInt(padding);
+                dos.write(serializedBitString);
             }
 
             // Convert memory buffer to a byte array
@@ -109,7 +72,37 @@ public class CompressionController {
 
     @PostMapping("/decode")
     public ResponseEntity<String> decodeFile(@RequestParam("file") MultipartFile file) {
-        //TODO;
-        return null;
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("Error: No file uploaded!");
+        }
+
+        try {
+            // Read input stream from uploaded file
+            InputStream inputStream = file.getInputStream();
+            DataInputStream dis = new DataInputStream(inputStream);
+
+            // Extract huffmanTable
+            int huffmanTableLength = dis.readInt();
+            byte[] serializedHuffmanTable = new byte[huffmanTableLength];
+            dis.readFully(serializedHuffmanTable); // Read the Huffman table bytes
+
+            // Extract encoded text bytes
+            int padding = dis.readInt();
+            byte[] encodedByteArray = dis.readAllBytes(); // read remaining file data
+
+            dis.close();
+
+            // Creating new Huffman instance with extracted Huffman table
+            Huffman huff = new Huffman(Huffman.deserializeHuffmanTable(serializedHuffmanTable));
+            String encodedBitString = Huffman.deserializeBytes(encodedByteArray, padding);
+            String decodedString = huff.decode(encodedBitString);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(decodedString);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during decoding");
+        }
     }
 }
