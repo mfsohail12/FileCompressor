@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,7 +24,7 @@ import com.example.server.huffman.Huffman;
 @RequestMapping("/compression")
 public class CompressionController {
 
-    public String convertToBitString(byte[] byteArray, int bitLength) {
+    public static String convertToBitString(byte[] byteArray, int bitLength) {
         StringBuilder bitString = new StringBuilder();
 
         for (int i = 0; i < byteArray.length; i++) {
@@ -49,6 +50,18 @@ public class CompressionController {
         }
         return byteArray;
     }
+
+    /*public static byte[] convertToByteArray(String bitString) {
+        StringBuilder sb = new StringBuilder(bitString);
+        if (bitString.length() % 8 != 0) {
+            int padding = 8 - (bitString.length() % 8);
+            for (int i = 0; i < padding; i++) {
+                sb.append("0");
+            }
+        }
+        byte[] bval = new BigInteger(sb.toString(), 2).toByteArray();
+        return bval;
+    }*/
 
     @PostMapping("/encode")
     public ResponseEntity<?> encodeFile(@RequestParam("file") MultipartFile file) {

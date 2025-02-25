@@ -49,7 +49,7 @@ const Compress = () => {
       <input
         type="file"
         accept=".txt"
-        className="file-input file-input-bordered file-input-error w-full max-w-xs"
+        className="file-input file-input-bordered file-input-error w-80 max-w-xs"
         onChange={handleFileChange}
       />
       {file && (
