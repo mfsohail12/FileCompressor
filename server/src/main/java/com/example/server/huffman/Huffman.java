@@ -25,6 +25,7 @@ public class Huffman {
         buildHuffmanTree();
     }
 
+    // Builds Huffman tree based on Huffman code map
     private void buildHuffmanTree() {
         this.root = new Node();
 
@@ -67,6 +68,7 @@ public class Huffman {
 
     }
 
+    // Updates charFrequencies with character frequencies of each character in the text
     private void updateCharFrequencies() {
         for (int i = 0; i < this.text.length(); i++) {
             char currChar = this.text.charAt(i);
@@ -75,27 +77,37 @@ public class Huffman {
         }
     }
 
+    // Encodes the text by generating canonical huffman codes
     public String encode() {
-        if (this.text.isEmpty())
-            return ""; // empty string given to encode
+        if (this.text.isEmpty()) // empty string given to encode
+            return "";
 
+        // Building Huffman tree:
         PriorityQueue<Node> queue = new PriorityQueue<Node>();
         this.charFrequencies.forEach((character, frequency) -> queue.add(new Leaf(character, frequency)));
 
         while (queue.size() > 1) {
             queue.add(new Node(queue.poll(), queue.poll())); // creates a new node using the smallest 2 frequencies
         }
-
         this.root = queue.poll();
+
+        // Updating Huffman code map based on generated Huffman tree structure
         generateHuffmanCodes(this.root, "");
 
+        // Converting Huffman code map to canonical form before encoding text
+        HuffmanCode[] codes = HuffmanCode.codeMap2CodeArr(this.huffmanCodes);
+        HuffmanCode[] canonicalCodes = HuffmanCode.toCanonicalCode(codes);
+        this.huffmanCodes = HuffmanCode.createCodeMap(canonicalCodes);
+
+        // returns encoded text based on canonical Huffman codebook
         return getEncodedText();
     }
 
+    // Updates Huffman code map based on generated Huffman tree structure
     private void generateHuffmanCodes(Node root, String code) {
         if (root instanceof Leaf) {
             if (code.isEmpty()) {
-                code = "0"; // Assign at least one bit
+                code = "0"; // Assign at least one bit (edge case for one character input)
             }
             this.huffmanCodes.put(((Leaf) root).getCharacter(), code);
             return;
@@ -104,20 +116,14 @@ public class Huffman {
         generateHuffmanCodes(root.rightNode, code + "1");
     }
 
-    public String serializeHuffmanCodes() {
-        StringBuilder sb = new StringBuilder();
-        for (var entry : huffmanCodes.entrySet()) {
-            String character = entry.getKey().toString();
-            String code = entry.getValue();
-
-            // Escape the special characters (e.g., newline, colon)
-            character = character.replace("\n", "\\n").replace(":", "\\:");
-            sb.append(character).append(":").append(code).append("\n");
-        }
-        return sb.toString();
+    // Seralizes Huffman code map into a byte array
+    // Array will be of length 2n, where n is the number of unique chars
+    public byte[] serializeHuffmanCodes() {
+        HuffmanCode[] codes = HuffmanCode.codeMap2CodeArr(this.huffmanCodes);
+        return HuffmanCode.SeralizeCodebook(codes);
     }
 
-
+    // Returns encoded text based on Huffman code map
     private String getEncodedText() {
         StringBuilder encodedText = new StringBuilder();
         for (int i = 0; i < this.text.length(); i++) {
@@ -155,14 +161,5 @@ public class Huffman {
         }
 
         return originalText.toString();
-    }
-
-    public static void main(String[] args) throws IOException {
-        Huffman huff = new Huffman("lolsies\nlosies");
-
-        String enc = huff.encode();
-        String og = huff.decode(enc);
-
-        System.out.println(og);
     }
 }

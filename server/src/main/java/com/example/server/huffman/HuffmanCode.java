@@ -1,6 +1,7 @@
 package com.example.server.huffman;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class HuffmanCode implements Comparable<HuffmanCode> {
     char character;
@@ -11,6 +12,11 @@ public class HuffmanCode implements Comparable<HuffmanCode> {
         this.character = character;
         this.code = code;
         this.codeLength = code.length();
+    }
+
+    public HuffmanCode(char character, int codeLength) {
+        this.character = character;
+        this.codeLength = codeLength;
     }
 
     // converts an array of huffmanCodes representing a codebook into canonical form
@@ -62,6 +68,43 @@ public class HuffmanCode implements Comparable<HuffmanCode> {
         return serializedCodebook;
     }
 
+    public static HuffmanCode[] DeserializeCodebook(byte[] serializedCodebook) {
+        HuffmanCode[] codes = new HuffmanCode[serializedCodebook.length / 2];
+
+        for (int i = 0; i < serializedCodebook.length; i+=2) {
+            char character = (char) serializedCodebook[i];
+            int codeLength = serializedCodebook[i + 1] & 0xFF; // ensure appropriate sign
+            HuffmanCode code = new HuffmanCode(character, codeLength);
+            codes[i/2] = code;
+        }
+
+        return codes;
+    }
+
+    // Converts an array of huffmanCodes into a hashmap, where characters map to respective code
+    public static HashMap<Character, String> createCodeMap(HuffmanCode[] codes) {
+        HashMap<Character, String> codeMap = new HashMap<>();
+
+        for (HuffmanCode code : codes) {
+            codeMap.put(code.character, code.code);
+        }
+
+        return codeMap;
+    }
+
+    public static HuffmanCode[] codeMap2CodeArr(HashMap<Character, String> codeMap) {
+        HuffmanCode[] codes = new HuffmanCode[codeMap.size()];
+
+        int i = 0;
+        for (HashMap.Entry<Character, String> entry : codeMap.entrySet()) {
+            HuffmanCode code = new HuffmanCode(entry.getKey(), entry.getValue());
+            codes[i] = code;
+            i++;
+        }
+
+        return codes;
+    }
+
     // ordering based on code length and then alphabetically
     @Override
     public int compareTo(HuffmanCode o) {
@@ -93,12 +136,12 @@ public class HuffmanCode implements Comparable<HuffmanCode> {
         // Serialize the canonical codebook
         byte[] serializedCodebook = HuffmanCode.SeralizeCodebook(canonicalCodes);
 
-        // Print serialized data (character and code length)
-        System.out.println("\nSerialized Codebook:");
-        for (int i = 0; i < serializedCodebook.length; i += 2) {
-            char character = (char) serializedCodebook[i];
-            int codeLength = serializedCodebook[i + 1] & 0xFF; // Ensure unsigned interpretation
-            System.out.println(character + " -> Length: " + codeLength);
+        HuffmanCode[] re = HuffmanCode.DeserializeCodebook(serializedCodebook);
+        HuffmanCode[] reCan = HuffmanCode.toCanonicalCode(re);
+        System.out.println("Deseralized Huffman can Codes:");
+        for (HuffmanCode code : re) {
+            System.out.println(code.character + ": " + code.code + ", " + code.codeLength);
         }
+
     }
 }
