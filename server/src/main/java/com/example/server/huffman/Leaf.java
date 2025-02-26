@@ -2,7 +2,6 @@ package com.example.server.huffman;
 
 public class Leaf extends Node {
     private char character;
-    private int frequency;
 
     public Leaf(char character, int frequency) {
         super(frequency);

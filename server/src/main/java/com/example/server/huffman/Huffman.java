@@ -34,13 +34,9 @@ public class Huffman {
             for (int i = 0; i < code.length(); i++) {
                 if (i == code.length() - 1) { // creating the leaf node in the tree
                     if (code.charAt(i) == '0') {
-                        if (currNode.leftNode == null) {
-                            currNode.leftNode = new Leaf(character);
-                        }
+                        currNode.leftNode = new Leaf(character);
                     } else if (code.charAt(i) == '1') {
-                        if (currNode.rightNode == null) {
-                            currNode.rightNode = new Leaf(character);
-                        }
+                        currNode.rightNode = new Leaf(character);
                     }
                 } else { // creating non-leaf nodes
                     if (code.charAt(i) == '0') {
@@ -177,6 +173,8 @@ public class Huffman {
                 continue;
             }
 
+            //System.out.println(i);
+
             char instruction = encodedText.charAt(i);
 
             if (instruction == '0') {
@@ -192,5 +190,28 @@ public class Huffman {
         }
 
         return originalText.toString();
+    }
+
+    public static void printTree(Node root) {
+        printTreeRecursive(root, 0);
+    }
+
+    // Recursive helper function to print the tree with indentation
+    private static void printTreeRecursive(Node node, int level) {
+        if (node == null) {
+            return;
+        }
+
+        // Print the right subtree first (so it's printed top to bottom)
+        printTreeRecursive(node.rightNode, level + 1);
+
+        // Print the current node's value with indentation for tree level
+        for (int i = 0; i < level; i++) {
+            System.out.print("   "); // Space for indentation
+        }
+        System.out.println(node.getFrequency());
+
+        // Print the left subtree
+        printTreeRecursive(node.leftNode, level + 1);
     }
 }

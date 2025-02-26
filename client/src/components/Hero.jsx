@@ -4,11 +4,15 @@ import Decompress from "./Decompress";
 
 const Hero = () => {
   const [isCompress, setIsCompress] = React.useState(true);
-  const compressBtnClass = isCompress ? "btn btn-error" : "btn";
-  const decompressBtnClass = isCompress ? "btn" : "btn btn-error";
+  const compressBtnClass = isCompress
+    ? "btn btn-error"
+    : "btn bg-[#1D232A] text-white";
+  const decompressBtnClass = isCompress
+    ? "btn bg-[#1D232A] text-white"
+    : "btn btn-error";
 
   return (
-    <div className="min-h-screen flex items-center justify-center flex-col">
+    <div className="min-h-screen flex items-center justify-center flex-col bg-[#1D232A]">
       <span className="mb-10 flex gap-5">
         <button
           className={compressBtnClass}

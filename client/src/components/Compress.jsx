@@ -45,11 +45,11 @@ const Compress = () => {
 
   return (
     <>
-      <p className="mb-4 font-bold">Compress your file:</p>
+      <p className="mb-4 font-bold text-white">Compress your file:</p>
       <input
         type="file"
         accept=".txt"
-        className="file-input file-input-bordered file-input-error w-80 max-w-xs"
+        className="file-input file-input-bordered file-input-error w-80 max-w-xs bg-[#1D232A] text-white"
         onChange={handleFileChange}
       />
       {file && (
@@ -68,6 +68,7 @@ const Compress = () => {
           {loading ? "Compressing..." : "Compress"}
         </button>
       )}
+      {!file && <p className="text-sm mt-8">Please provide a .txt file</p>}
     </>
   );
 };

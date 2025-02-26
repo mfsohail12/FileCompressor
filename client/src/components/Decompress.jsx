@@ -46,11 +46,11 @@ const Compress = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <p className="mb-4 font-bold">Decompress your file:</p>
+      <p className="mb-4 font-bold text-white">Decompress your file:</p>
       <input
         type="file"
         accept=".bin"
-        className="file-input file-input-bordered file-input-error w-80 max-w-xs"
+        className="file-input file-input-bordered file-input-error w-80 max-w-xs bg-[#1D232A] text-white"
         onChange={handleFileChange}
       />
       {file && (
@@ -85,6 +85,9 @@ const Compress = () => {
             Download Decompressed File
           </button>
         </div>
+      )}
+      {!file && (
+        <p className="text-sm mt-8">Please provide the compressed .bin file</p>
       )}
     </div>
   );
