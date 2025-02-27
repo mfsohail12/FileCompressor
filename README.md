@@ -38,13 +38,30 @@ Compression of a .txt file containing the whole Toy Story movie script:
 ### Average Compression Rate
 The average compression rate is about 43%.
 
-## Usage
+## Installation
 1. Clone the repository:
 	```
 	git clone https://github.com/mfsohail12/FileCompressor.git
 	```
+2. Install client-side dependencies:
+	```
+	cd client
+	npm install
+	```
+3. Install server-side dependencies:
+	```
+	cd server
+	mvn package
+	```
 
-2. Run the client:
-```
-cd client
-```
+## Usage
+1. Start the server:
+	```
+	cd server
+	mvn spring-boot:run
+	```
+2. Start the client:
+	```
+	cd client
+	npm start
+	```
