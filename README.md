@@ -8,18 +8,21 @@ This is my implementation of a file compressor using Huffman coding. Huffman cod
 
 ## Sample Compressions
 
+### Bee Movie
 Compression of a .txt file containing the whole Bee Movie script:
 
 ![Bee Movie script compression comparison](https://github.com/mfsohail12/FileCompressor/blob/main/Assets/BeeMovie.png)
 
 Compression rate: 41% 
 
+### Shrek
 Compression of a .txt file containing the whole Shrek movie script:
 
 ![Shrek script compression comparison](https://github.com/mfsohail12/FileCompressor/blob/main/Assets/Shrek.png)
 
 Compression rate: 40%
 
+### Toy Story
 Compression of a .txt file containing the whole Toy Story movie script:
 
 ![Toy Story script compression comparison](https://github.com/mfsohail12/FileCompressor/blob/main/Assets/ToyStory.png)
