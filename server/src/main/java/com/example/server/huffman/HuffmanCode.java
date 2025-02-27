@@ -31,7 +31,7 @@ public class HuffmanCode implements Comparable<HuffmanCode> {
             HuffmanCode prevCode = codes[i - 1];
             HuffmanCode currCode = codes[i];
             currCode.code = incrementBinaryString(prevCode.code);
-            if (prevCode.codeLength != currCode.codeLength) currCode.code = appendZero(currCode.code);
+            while (currCode.code.length() != currCode.codeLength) currCode.code = currCode.code + "0";
         }
 
         return codes;
@@ -50,13 +50,11 @@ public class HuffmanCode implements Comparable<HuffmanCode> {
         return incrementedBinary;
     }
 
-    private static String appendZero(String binaryString) {
-        return binaryString + "0";
-    }
-
     // Serializes character and character code length for a huffmanCodebook
-    public static byte[] SeralizeCodebook(HuffmanCode[] codes) {
+    public static byte[] SerializeCodebook(HuffmanCode[] codes) {
         byte[] serializedCodebook = new byte[2 * codes.length];
+
+        Arrays.sort(codes);
 
         for (int i = 0; i < codes.length; i++) {
             HuffmanCode currCode = codes[i];
@@ -115,33 +113,7 @@ public class HuffmanCode implements Comparable<HuffmanCode> {
         return lengthOrder;
     }
 
-    public static void main(String[] args) {
-        // Define a sample Huffman codebook
-        HuffmanCode[] codes = {
-                new HuffmanCode('A', "0"),
-                new HuffmanCode('B', "10"),
-                new HuffmanCode('C', "110"),
-                new HuffmanCode('D', "111")
-        };
-
-        // Convert to canonical Huffman codes
-        HuffmanCode[] canonicalCodes = HuffmanCode.toCanonicalCode(codes);
-
-        // Print canonical codes
-        System.out.println("Canonical Huffman Codes:");
-        for (HuffmanCode code : canonicalCodes) {
-            System.out.println(code.character + ": " + code.code + ", " + code.codeLength);
-        }
-
-        // Serialize the canonical codebook
-        byte[] serializedCodebook = HuffmanCode.SeralizeCodebook(canonicalCodes);
-
-        HuffmanCode[] re = HuffmanCode.DeserializeCodebook(serializedCodebook);
-        HuffmanCode[] reCan = HuffmanCode.toCanonicalCode(re);
-        System.out.println("Deseralized Huffman can Codes:");
-        for (HuffmanCode code : re) {
-            System.out.println(code.character + ": " + code.code + ", " + code.codeLength);
-        }
-
+    public String toString() {
+        return "{" + this.character + ":" + this.code + ", " + this.codeLength + "}";
     }
 }

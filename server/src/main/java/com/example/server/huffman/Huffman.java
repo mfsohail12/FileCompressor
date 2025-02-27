@@ -122,7 +122,7 @@ public class Huffman {
     // Array will be of length 2n, where n is the number of unique chars
     public byte[] serializeHuffmanTable() {
         HuffmanCode[] codes = HuffmanCode.codeMap2CodeArr(this.huffmanCodes);
-        return HuffmanCode.SeralizeCodebook(codes);
+        return HuffmanCode.SerializeCodebook(codes);
     }
 
     public static HashMap<Character, String> deserializeHuffmanTable(byte[] tableBytes) {
@@ -160,7 +160,9 @@ public class Huffman {
         return bitString.toString().substring(0, bitString.length() - padding);
     }
 
+    // Decodes a given bit string using huffman tree
     public String decode(String encodedText) {
+
         if (encodedText.isEmpty())
             return ""; // empty encodedText
 
@@ -172,8 +174,6 @@ public class Huffman {
                 originalText.append(((Leaf) this.root).getCharacter());
                 continue;
             }
-
-            //System.out.println(i);
 
             char instruction = encodedText.charAt(i);
 
@@ -190,28 +190,5 @@ public class Huffman {
         }
 
         return originalText.toString();
-    }
-
-    public static void printTree(Node root) {
-        printTreeRecursive(root, 0);
-    }
-
-    // Recursive helper function to print the tree with indentation
-    private static void printTreeRecursive(Node node, int level) {
-        if (node == null) {
-            return;
-        }
-
-        // Print the right subtree first (so it's printed top to bottom)
-        printTreeRecursive(node.rightNode, level + 1);
-
-        // Print the current node's value with indentation for tree level
-        for (int i = 0; i < level; i++) {
-            System.out.print("   "); // Space for indentation
-        }
-        System.out.println(node.getFrequency());
-
-        // Print the left subtree
-        printTreeRecursive(node.leftNode, level + 1);
     }
 }

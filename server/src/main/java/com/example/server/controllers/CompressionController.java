@@ -5,11 +5,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +37,7 @@ public class CompressionController {
 
             // Serializing data
             byte[] serializedHuffmanTable = huff.serializeHuffmanTable();
-            int padding = encodedText.length() % 8 == 0 ? 0 : 8 - (encodedText.length() & 8); // padding for encoded bit string
+            int padding = encodedText.length() % 8 == 0 ? 0 : 8 - (encodedText.length() % 8); // padding for encoded bit string
             byte[] serializedBitString = Huffman.serializeBitString(encodedText);
 
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
