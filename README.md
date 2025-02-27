@@ -35,8 +35,16 @@ Compression of a .txt file containing the whole Toy Story movie script:
 
 ![Toy Story script compression comparison](https://github.com/mfsohail12/FileCompressor/blob/main/Assets/ToyStory.png)
 
-### Average Compression rate
+### Average Compression Rate
 The average compression rate is about 43%.
 
 ## Usage
+1. Clone the repository:
+	```
+	git clone https://github.com/mfsohail12/FileCompressor.git
+	```
 
+2. Run the client:
+```
+cd client
+```
