@@ -11,22 +11,32 @@ This is my implementation of a file compressor using Huffman coding. Huffman cod
 ### Bee Movie
 Compression of a .txt file containing the whole Bee Movie script:
 
-![Bee Movie script compression comparison](https://github.com/mfsohail12/FileCompressor/blob/main/Assets/BeeMovie.png)
+ - Original file size: 49,476 bytes
+ - Compressed file size: 29,314 bytes
+ - Compression rate: ~41%
 
-Compression rate: 41% 
+![Bee Movie script compression comparison](https://github.com/mfsohail12/FileCompressor/blob/main/Assets/BeeMovie.png)
 
 ### Shrek
 Compression of a .txt file containing the whole Shrek movie script:
 
-![Shrek script compression comparison](https://github.com/mfsohail12/FileCompressor/blob/main/Assets/Shrek.png)
+ - Original file size: 52,638 bytes
+ - Compressed file size: 31,685 bytes
+ - Compression rate: ~40%
 
-Compression rate: 40%
+![Shrek script compression comparison](https://github.com/mfsohail12/FileCompressor/blob/main/Assets/Shrek.png)
 
 ### Toy Story
 Compression of a .txt file containing the whole Toy Story movie script:
 
+ - Original file size: 168,592 bytes
+ - Compressed file size: 89,220 bytes
+ - Compression rate: ~47%
+
 ![Toy Story script compression comparison](https://github.com/mfsohail12/FileCompressor/blob/main/Assets/ToyStory.png)
 
-Compression rate: 47%
+### Average Compression rate
+The average compression rate is about 43%.
 
-Average Compression rate: 
+## Usage
+
