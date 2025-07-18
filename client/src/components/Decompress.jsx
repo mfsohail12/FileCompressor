@@ -7,6 +7,7 @@ const Compress = () => {
   const [file, setFile] = useState(null);
   const [decompressedFile, setdecompressedFile] = useState("");
   const [decompressedText, setDecompressedText] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleFileChange = (e) => {
     if (e.target.files) {
@@ -16,6 +17,7 @@ const Compress = () => {
 
   const handleDecompress = async () => {
     if (!file) return;
+    setLoading(true);
 
     const formData = new FormData();
     formData.append("file", file);
@@ -35,17 +37,9 @@ const Compress = () => {
       setDecompressedText(response.data);
     } catch (error) {
       console.error("Error decompressing file:", error);
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const handleDownload = () => {
-    const blob = new Blob([decompressedFile], { type: "text/plain" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "decompressed.txt";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   return (
@@ -72,8 +66,9 @@ const Compress = () => {
         <button
           className="btn btn-outline btn-error mt-6 w-40"
           onClick={handleDecompress}
+          disabled={loading}
         >
-          Decompress
+          {loading ? "Decompressing ..." : "Decompress"}
         </button>
       )}
       {!file && (
