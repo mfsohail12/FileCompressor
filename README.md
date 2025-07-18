@@ -6,6 +6,8 @@ This is my implementation of a file compressor using Huffman coding. Huffman cod
 
 ![Example of decompressing a file](./Assets/Decompress.png)
 
+Now available at [huffman-file-compressor.vercel.app](https://huffman-file-compressor.vercel.app/)
+
 ## Sample Compressions
 
 ### Bee Movie
