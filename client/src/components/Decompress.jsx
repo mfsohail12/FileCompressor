@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
+import FileDownload from "./FileDownload";
+import TextPreview from "./TextPreview";
 
 const Compress = () => {
   const [file, setFile] = useState(null);
+  const [decompressedFile, setdecompressedFile] = useState("");
   const [decompressedText, setDecompressedText] = useState("");
 
   const handleFileChange = (e) => {
@@ -18,16 +21,17 @@ const Compress = () => {
     formData.append("file", file);
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/compression/decode",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post("/compression/decode", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
+      if (!response) throw new Error("No decompressed file data found");
+
+      const blob = new Blob([response.data], { type: "text/plain" });
+
+      setdecompressedFile({ data: blob, name: file.name });
       setDecompressedText(response.data);
     } catch (error) {
       console.error("Error decompressing file:", error);
@@ -35,7 +39,7 @@ const Compress = () => {
   };
 
   const handleDownload = () => {
-    const blob = new Blob([decompressedText], { type: "text/plain" });
+    const blob = new Blob([decompressedFile], { type: "text/plain" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = "decompressed.txt";
@@ -46,21 +50,25 @@ const Compress = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <p className="mb-4 font-bold text-white">Decompress your file:</p>
-      <input
-        type="file"
-        accept=".bin"
-        className="file-input file-input-bordered file-input-error w-80 max-w-xs bg-[#1D232A] text-white"
-        onChange={handleFileChange}
-      />
-      {file && (
-        <div className="mt-4 text-sm w-80">
-          <p>File name: {file.name}</p>
-          <p>Size: {(file.size / 1024).toFixed(2)} KB</p>
-        </div>
+      {!decompressedFile && (
+        <>
+          <p className="mb-4 font-bold text-white">Decompress your file:</p>
+          <input
+            type="file"
+            accept=".bin"
+            className="file-input file-input-bordered file-input-error w-80 max-w-xs bg-[#1D232A] text-white"
+            onChange={handleFileChange}
+          />
+          {file && (
+            <div className="mt-4 text-sm w-80 text-white">
+              <p>File name: {file.name}</p>
+              <p>Size: {(file.size / 1024).toFixed(2)} KB</p>
+            </div>
+          )}
+        </>
       )}
 
-      {file && (
+      {!decompressedFile && file && (
         <button
           className="btn btn-outline btn-error mt-6 w-40"
           onClick={handleDecompress}
@@ -68,26 +76,16 @@ const Compress = () => {
           Decompress
         </button>
       )}
-
-      {decompressedText && (
-        <div className="mt-6 w-80">
-          <p className="font-semibold">Decompressed Text Preview:</p>
-          <textarea
-            className="textarea textarea-bordered w-full mt-2"
-            value={decompressedText}
-            readOnly
-            rows={5}
-          ></textarea>
-          <button
-            className="btn btn-success mt-4 w-full"
-            onClick={handleDownload}
-          >
-            Download Decompressed File
-          </button>
-        </div>
-      )}
       {!file && (
-        <p className="text-sm mt-8">Please provide the compressed .bin file</p>
+        <p className="text-sm mt-8 text-white">
+          Please provide the compressed .bin file
+        </p>
+      )}
+      {decompressedFile && (
+        <>
+          <FileDownload file={decompressedFile} type={".txt"} />
+          <TextPreview text={decompressedText} />
+        </>
       )}
     </div>
   );
