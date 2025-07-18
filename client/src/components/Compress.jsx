@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import FileDownload from "./FileDownload";
 import TextPreview from "./TextPreview";
+import beeMovie from "../../public/BeeMovie.txt";
 
 const Compress = () => {
   const [file, setFile] = useState(null);
@@ -9,7 +10,7 @@ const Compress = () => {
   const [compressedFile, setCompressedFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  console.log(fileText);
+  //console.log(file);
 
   const handleFileChange = (e) => {
     if (e.target.files) {
@@ -58,6 +59,20 @@ const Compress = () => {
     }
   };
 
+  const inputBeeMovie = async () => {
+    const res = await fetch(beeMovie);
+
+    const text = await res.text();
+
+    const blob = new Blob([text], { type: "text/plain" });
+    const beeMovieFile = new File([blob], "BeeMovie.txt", {
+      type: "text/plain",
+    });
+
+    setFile(beeMovieFile);
+    setFileText(text);
+  };
+
   return (
     <>
       {!compressedFile && (
@@ -91,7 +106,15 @@ const Compress = () => {
         </button>
       )}
       {!file && (
-        <p className="text-sm mt-8 text-white">Please provide a .txt file</p>
+        <p className="text-sm mt-8 text-white text-center">
+          Please provide a .txt file or{" "}
+          <span
+            className="text-red-400 hover:text-red-300 hover:cursor-pointer block"
+            onClick={inputBeeMovie}
+          >
+            try the Bee movie script
+          </span>
+        </p>
       )}
       {compressedFile && <FileDownload file={compressedFile} type={".bin"} />}
     </>
